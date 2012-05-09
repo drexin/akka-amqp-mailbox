@@ -1,0 +1,13 @@
+reload
+compile
+reload
+compile
+test
+reload
+compile
+test
+reload
+compile
+reload
+test
+exit
