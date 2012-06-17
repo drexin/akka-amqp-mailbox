@@ -9,6 +9,7 @@ object AkkaAmqpMailboxBuild extends Build {
     id = "akka-amqp-mailbox",
     base = file("."),
     settings = defaultSettings ++ Seq(
+      parallelExecution in GlobalScope := System.getProperty("akka.parallelExecution", "false").toBoolean,
       libraryDependencies ++= Dependencies.root
     )
   )
@@ -49,7 +50,8 @@ object AkkaAmqpMailboxBuild extends Build {
 object Dependencies {
   import Dependency._
 
-  val root = Seq(akkaActor, akkaMailboxesCommon withSources(), rabbit, commonsPool, slf4jApi, Test.junit)
+  val root = Seq(akkaActor, akkaMailboxesCommon withSources(), rabbit, commonsPool,
+                 slf4jApi, Test.junit, Test.akkaActorTests, Test.scalatest)
 }
 
 object Dependency {
@@ -69,9 +71,10 @@ object Dependency {
   val slf4jApi            = "org.slf4j"                   % "slf4j-api"              % V.Slf4j       // MIT
 
   object Test {
-    val junit       = "junit"                       % "junit"               % "4.5"        % "test" // Common Public License 1.0
-    val scalatest   = "org.scalatest"               %% "scalatest"          % V.Scalatest  % "test" // ApacheV2
-    val scalacheck  = "org.scala-tools.testing"     %% "scalacheck"         % "1.9"        % "test" // New BSD
-    val log4j       = "log4j"                       % "log4j"               % "1.2.14"     % "test" // ApacheV2
+    val junit             = "junit"                       % "junit"               % "4.5"        % "test" // Common Public License 1.0
+    val scalatest         = "org.scalatest"               %% "scalatest"          % V.Scalatest  % "test" // ApacheV2
+    val scalacheck        = "org.scala-tools.testing"     %% "scalacheck"         % "1.9"        % "test" // New BSD
+    val log4j             = "log4j"                       % "log4j"               % "1.2.14"     % "test" // ApacheV2
+    val akkaActorTests    = "com.typesafe.akka"           % "akka-actor-tests"    % V.Akka       % "test" // ApacheV2
   }
 }

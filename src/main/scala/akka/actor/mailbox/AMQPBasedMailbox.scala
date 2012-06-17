@@ -24,11 +24,12 @@ import akka.dispatch.{
   MailboxType,
   MessageQueue
 }
+import akka.actor.ActorSystem.Settings
 import com.typesafe.config.Config
 
 class AMQPBasedMailboxException(message: String) extends AkkaException(message)
 
-class AMQPBasedMailboxType(config: Config) extends MailboxType {
+class AMQPBasedMailboxType(settings: Settings, config: Config) extends MailboxType {
   override def create(owner: Option[ActorContext]) = owner match {
     case Some(owner) ⇒ new AMQPBasedMailbox(owner, config)
     case None        ⇒ throw new AMQPBasedMailboxException("AMQPBasedMailbox needs an owner to work properly.")
@@ -71,6 +72,7 @@ class AMQPBasedMailbox(owner: ActorContext, val config: Config) extends DurableM
           message = channel.basicGet(name, true)
         }
       }
+      pool.close
     }
   }
 
