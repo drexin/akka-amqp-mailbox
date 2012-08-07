@@ -1,7 +1,7 @@
 /**
- *  Copyright (C) 2009-2012 Typesafe Inc. <http://www.typesafe.com>
+ *  Copyright (C) 2012 Dario Rexin
  */
-package akka.actor.mailbox
+package de.r3tech.akka.actor.mailbox
 
 import akka.AkkaException
 import akka.actor.ActorSystem

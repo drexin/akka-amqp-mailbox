@@ -1,11 +1,11 @@
-package akka.actor.mailbox
+package de.r3tech.akka.actor.mailbox
 
-import akka.dispatch.Mailbox
+import akka.actor.mailbox.DurableMailboxSpec
 
 object AMQPBasedMailboxSpec {
   val config = """
     AMQP-dispatcher {
-      mailbox-type = akka.actor.mailbox.AMQPBasedMailboxType
+      mailbox-type = de.r3tech.akka.actor.mailbox.AMQPBasedMailboxType
       throughput = 1
     }
     """
@@ -14,9 +14,4 @@ object AMQPBasedMailboxSpec {
 @org.junit.runner.RunWith(classOf[org.scalatest.junit.JUnitRunner])
 class AMQPBasedMailboxSpec extends DurableMailboxSpec("AMQP", AMQPBasedMailboxSpec.config) {
   val settings = new AMQPBasedMailboxSettings(system, system.settings.config.getConfig("AMQP-dispatcher"))
-
-  def isDurableMailbox(m: Mailbox): Boolean = {
-    println(m.messageQueue)
-    m.messageQueue.isInstanceOf[AMQPBasedMailbox]
-  }
 }

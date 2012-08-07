@@ -1,7 +1,7 @@
 /**
- *  Copyright (C) 2009-2012 Typesafe Inc. <http://www.typesafe.com>
+ *  Copyright (C) 2012 Dario Rexin
  */
-package akka.actor.mailbox
+package de.r3tech.akka.actor.mailbox
 
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -17,6 +17,10 @@ import akka.actor.{
   ActorContext,
   ActorRef,
   DeadLetter
+}
+import akka.actor.mailbox.{
+  DurableMessageQueue,
+  DurableMessageSerialization
 }
 import akka.event.Logging
 import akka.dispatch.{

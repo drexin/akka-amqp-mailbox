@@ -24,7 +24,7 @@ object AkkaAmqpMailboxBuild extends Build {
 
   lazy val buildSettings = Seq(
     organization := "com.typesafe.akka",
-    version := "2.0.1",
+    version := "2.0.2",
     scalaVersion := "2.9.2"
   )
 
@@ -57,7 +57,7 @@ object Dependencies {
 object Dependency {
 
   object V {
-    val Akka         = "2.0.1"
+    val Akka         = "2.0.2"
     val CommonsPool  = "1.5.6"
     val Rabbit       = "2.7.1"
     val Scalatest    = "1.6.1"
