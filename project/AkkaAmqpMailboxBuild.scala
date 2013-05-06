@@ -59,7 +59,7 @@ object Dependency {
   object V {
     val Akka         = "2.1.2"
     val CommonsPool  = "1.5.6"
-    val Rabbit       = "2.7.1"
+    val Rabbit       = "3.0.4"
     val Scalatest    = "1.9.1"
     val Slf4j        = "1.6.4"
   }
