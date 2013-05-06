@@ -1,7 +1,7 @@
 import sbt._
 import sbt.Keys._
-import com.typesafe.sbtscalariform.ScalariformPlugin
-import com.typesafe.sbtscalariform.ScalariformPlugin.ScalariformKeys
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 
 object AkkaAmqpMailboxBuild extends Build {
 
@@ -24,8 +24,8 @@ object AkkaAmqpMailboxBuild extends Build {
 
   lazy val buildSettings = Seq(
     organization := "com.typesafe.akka",
-    version := "2.0.2",
-    scalaVersion := "2.9.2"
+    version := "2.1.2",
+    scalaVersion := "2.10.1"
   )
 
   lazy val defaultSettings = Defaults.defaultSettings ++ formatSettings ++ Seq(
@@ -33,7 +33,7 @@ object AkkaAmqpMailboxBuild extends Build {
     scalacOptions ++= Seq("-encoding", "UTF-8", "-deprecation", "-unchecked")
   )
 
-  lazy val formatSettings = ScalariformPlugin.scalariformSettings ++ Seq(
+  lazy val formatSettings = SbtScalariform.scalariformSettings ++ Seq(
     ScalariformKeys.preferences in Compile := formattingPreferences,
     ScalariformKeys.preferences in Test    := formattingPreferences
   )
@@ -57,24 +57,24 @@ object Dependencies {
 object Dependency {
 
   object V {
-    val Akka         = "2.0.2"
+    val Akka         = "2.1.2"
     val CommonsPool  = "1.5.6"
     val Rabbit       = "2.7.1"
-    val Scalatest    = "1.6.1"
+    val Scalatest    = "1.9.1"
     val Slf4j        = "1.6.4"
   }
 
-  val akkaMailboxesCommon = "com.typesafe.akka"           % "akka-mailboxes-common"  % V.Akka        // ApacheV2
-  val akkaActor           = "com.typesafe.akka"           % "akka-actor"             % V.Akka        // ApacheV2
-  val commonsPool         = "commons-pool"                % "commons-pool"           % V.CommonsPool // ApacheV2
-  val rabbit              = "com.rabbitmq"                % "amqp-client"            % V.Rabbit      // Mozilla Public License
-  val slf4jApi            = "org.slf4j"                   % "slf4j-api"              % V.Slf4j       // MIT
+  val akkaMailboxesCommon = "com.typesafe.akka"           %% "akka-mailboxes-common"  % V.Akka        // ApacheV2
+  val akkaActor           = "com.typesafe.akka"           %% "akka-actor"             % V.Akka        // ApacheV2
+  val commonsPool         = "commons-pool"                %  "commons-pool"           % V.CommonsPool // ApacheV2
+  val rabbit              = "com.rabbitmq"                %  "amqp-client"            % V.Rabbit      // Mozilla Public License
+  val slf4jApi            = "org.slf4j"                   %  "slf4j-api"              % V.Slf4j       // MIT
 
   object Test {
-    val junit             = "junit"                       % "junit"               % "4.5"        % "test" // Common Public License 1.0
-    val scalatest         = "org.scalatest"               %% "scalatest"          % V.Scalatest  % "test" // ApacheV2
-    val scalacheck        = "org.scala-tools.testing"     %% "scalacheck"         % "1.9"        % "test" // New BSD
-    val log4j             = "log4j"                       % "log4j"               % "1.2.14"     % "test" // ApacheV2
-    val akkaActorTests    = "com.typesafe.akka"           % "akka-actor-tests"    % V.Akka       % "test" // ApacheV2
+    val junit             = "junit"                       %  "junit"                % "4.5"        % "test" // Common Public License 1.0
+    val scalatest         = "org.scalatest"               %% "scalatest"            % V.Scalatest  % "test" // ApacheV2
+    val scalacheck        = "org.scala-tools.testing"     %% "scalacheck"           % "1.10.0"     % "test" // New BSD
+    val log4j             = "log4j"                       %  "log4j"                % "1.2.14"     % "test" // ApacheV2
+    val akkaActorTests    = "com.typesafe.akka"           %% "akka-actor-tests"     % V.Akka       % "test" // ApacheV2
   }
 }

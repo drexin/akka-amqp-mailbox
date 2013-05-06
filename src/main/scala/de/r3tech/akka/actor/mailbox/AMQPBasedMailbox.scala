@@ -13,11 +13,7 @@ import com.rabbitmq.client.{
 }
 
 import akka.AkkaException
-import akka.actor.{
-  ActorContext,
-  ActorRef,
-  DeadLetter
-}
+import akka.actor._
 import akka.actor.mailbox.{
   DurableMessageQueue,
   DurableMessageSerialization
@@ -34,15 +30,20 @@ import com.typesafe.config.Config
 class AMQPBasedMailboxException(message: String) extends AkkaException(message)
 
 class AMQPBasedMailboxType(settings: Settings, config: Config) extends MailboxType {
-  override def create(owner: Option[ActorContext]) = owner match {
-    case Some(owner) ⇒ new AMQPBasedMailbox(owner, config)
-    case None        ⇒ throw new AMQPBasedMailboxException("AMQPBasedMailbox needs an owner to work properly.")
+  override def create(owner: Option[ActorRef], system: Option[ActorSystem]) = {
+    val combined = owner.zip(system).headOption
+
+    combined.fold {
+      throw new AMQPBasedMailboxException("AMQPBasedMailbox needs an owner to work properly.")
+    } {
+      case (owner, system) ⇒ new AMQPBasedMailbox(owner, system.asInstanceOf[ExtendedActorSystem], config)
+    }
   }
 }
 
-class AMQPBasedMailbox(owner: ActorContext, val config: Config) extends DurableMessageQueue(owner) with DurableMessageSerialization {
+class AMQPBasedMailbox(owner: ActorRef, system: ExtendedActorSystem, val config: Config) extends DurableMessageQueue(owner, system) with DurableMessageSerialization {
 
-  private val settings = new AMQPBasedMailboxSettings(owner.system, config)
+  private val settings = new AMQPBasedMailboxSettings(system, config)
   private val pool = settings.ChannelPool
   private val log = Logging(system, "AMQPBasedMailbox")
   private val consumerQueue = new LinkedBlockingQueue[QueueingConsumer.Delivery]
@@ -65,14 +66,14 @@ class AMQPBasedMailbox(owner: ActorContext, val config: Config) extends DurableM
     envelope
   }
 
-  def cleanUp(owner: ActorContext, deadLetters: MessageQueue) {
+  def cleanUp(owner: ActorRef, deadLetters: MessageQueue) {
     consumer.getChannel.close
     withErrorHandling {
       pool.withChannel { channel ⇒
         var message = channel.basicGet(name, true)
         while (message != null) {
           val envelope = deserialize(message.getBody)
-          deadLetters.enqueue(owner.actorFor("/deadletters"), envelope)
+          deadLetters.enqueue(owner, envelope)
           message = channel.basicGet(name, true)
         }
       }

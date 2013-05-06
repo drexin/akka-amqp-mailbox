@@ -55,7 +55,7 @@ private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingA
       channel.asInstanceOf[Channel].basicQos(1)
       true
     } catch {
-      case _ ⇒ false
+      case _: Exception ⇒ false
     }
   }
 
