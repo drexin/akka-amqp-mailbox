@@ -18,6 +18,10 @@ running and add the following to your akka.conf:
             user = "guest"
             password = "guest"
             virtualHost = "/"
+            # as an alternative to the single setings,
+            # a uri can be provided, which wil be
+            # prefered over the other settings
+            # uri = "amqp://guest:guest@127.0.0.1:5672/"
             connectionTimeout = 1000ms
           }
         }
