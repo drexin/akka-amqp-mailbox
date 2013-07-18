@@ -13,11 +13,11 @@ import com.rabbitmq.client.Channel
 
 class AMQPConnectException(message: String) extends AkkaException(message)
 
-private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingAdapter) extends PoolableObjectFactory {
+private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingAdapter) extends PoolableObjectFactory[Channel] {
 
   private var connection = createConnection
 
-  def makeObject(): Object = {
+  def makeObject(): Channel = {
     try {
       createChannel
     } catch {
@@ -41,16 +41,16 @@ private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingA
 
   private def createChannel = {
     val channel = connection.createChannel
-    channel.basicQos(1)
+    channel.basicQos(100)
     channel
   }
 
-  def destroyObject(channel: Object): Unit = {
+  def destroyObject(channel: Channel): Unit = {
     channel.asInstanceOf[Channel].close
   }
 
-  def passivateObject(channel: Object): Unit = {}
-  def validateObject(channel: Object) = {
+  def passivateObject(channel: Channel): Unit = {}
+  def validateObject(channel: Channel) = {
     try {
       channel.asInstanceOf[Channel].basicQos(1)
       true
@@ -59,14 +59,14 @@ private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingA
     }
   }
 
-  def activateObject(channel: Object): Unit = {}
+  def activateObject(channel: Channel): Unit = {}
 }
 
 class AMQPChannelPool(factory: ConnectionFactory, log: LoggingAdapter) {
   val pool = new StackObjectPool(new AMQPChannelFactory(factory, log))
 
   def withChannel[T](body: Channel ⇒ T) = {
-    val channel = pool.borrowObject.asInstanceOf[Channel]
+    val channel = pool.borrowObject
     try {
       body(channel)
     } finally {

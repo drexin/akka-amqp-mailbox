@@ -18,7 +18,7 @@ import com.typesafe.config.{ ConfigFactory, Config }
 import DurableMailboxSpecActorFactory.{ MailboxTestActor, AccumulatorActor }
 import akka.actor.{ RepointableRef, Props, ActorSystem, ActorRefWithCell, ActorRef, ActorCell, Actor }
 import akka.dispatch.Mailbox
-import akka.testkit.TestKit
+import akka.testkit.{ TestKit, ImplicitSender }
 import scala.concurrent.duration._
 import scala.concurrent.Await
 import akka.pattern.ask
@@ -61,7 +61,7 @@ object DurableMailboxSpec {
  * The id of the dispatcher must be the same as the `<backendName>-dispatcher`.
  */
 abstract class DurableMailboxSpec(system: ActorSystem, val backendName: String)
-  extends TestKit(system) with WordSpec with MustMatchers with BeforeAndAfterAll {
+  extends TestKit(system) with ImplicitSender with WordSpec with MustMatchers with BeforeAndAfterAll {
 
   import DurableMailboxSpecActorFactory._
 
@@ -146,7 +146,6 @@ abstract class DurableMailboxSpec(system: ActorSystem, val backendName: String)
 
     "deliver messages at most once" in {
       val queueActor = createMailboxTestActor()
-      implicit val sender = testActor
 
       val msgs = 1 to 100 map { x ⇒ "foo" + x }
 
@@ -168,12 +167,18 @@ abstract class DurableMailboxSpec(system: ActorSystem, val backendName: String)
 
       implicit val timeout: Timeout = Timeout(5 seconds)
 
-      val results = for (a ← actors; m ← msgs) yield a ? m
+      val results = for (a ← actors; m ← msgs) yield a ! m
 
-      results.foreach(Await.ready(_, 5 seconds))
+      within(5 seconds) {
+        for {
+          a ← actors
+          m ← msgs
+        } {
+          expectMsg("ack")
+        }
+      }
 
       for (a ← actors) {
-        implicit val sender = testActor
         a ! "sum"
         expectMsg(expectedResult)
       }

@@ -62,23 +62,16 @@ class AMQPBasedMailbox(owner: ActorRef, system: ExtendedActorSystem, val config:
   }
 
   def dequeue(): Envelope = withErrorHandling {
-    val envelope = deserialize(consumer.nextDelivery.getBody)
-    envelope
+    try {
+      val delivery = consumer.nextDelivery(settings.DeliveryTimeout)
+      deserialize(delivery.getBody)
+    } catch {
+      case _: NullPointerException ⇒ null
+    }
   }
 
   def cleanUp(owner: ActorRef, deadLetters: MessageQueue) {
     consumer.getChannel.close
-    withErrorHandling {
-      pool.withChannel { channel ⇒
-        var message = channel.basicGet(name, true)
-        while (message != null) {
-          val envelope = deserialize(message.getBody)
-          deadLetters.enqueue(owner, envelope)
-          message = channel.basicGet(name, true)
-        }
-      }
-      pool.close
-    }
   }
 
   def numberOfMessages: Int = withErrorHandling {

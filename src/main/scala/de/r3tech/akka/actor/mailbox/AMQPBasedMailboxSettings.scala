@@ -20,20 +20,21 @@ class AMQPBasedMailboxSettings(val system: ActorSystem, val userConfig: Config) 
   if (hasPath("uri")) {
     factory.setUri(getString("uri"))
   } else {
-    val ConnectionTimeout = getMilliseconds("connectionTimeout")
     val Hostname = getString("hostname")
     val Password = getString("password")
     val Port = getInt("port")
     val User = getString("user")
-    val VirtualHost = getString("virtualHost")
+    val VirtualHost = getString("virtual-host")
 
     factory.setUsername(User)
     factory.setPassword(Password)
     factory.setVirtualHost(VirtualHost)
     factory.setHost(Hostname)
     factory.setPort(Port)
-    factory.setConnectionTimeout(ConnectionTimeout.toInt)
   }
+  val ConnectionTimeout = getMilliseconds("connection-timeout")
+  val DeliveryTimeout = getMilliseconds("delivery-timeout")
+  factory.setConnectionTimeout(ConnectionTimeout.toInt)
 
   val ChannelPool = new AMQPChannelPool(factory, log)
 }

@@ -10,7 +10,8 @@ object AkkaAmqpMailboxBuild extends Build {
     base = file("."),
     settings = defaultSettings ++ Seq(
       parallelExecution in GlobalScope := System.getProperty("akka.parallelExecution", "false").toBoolean,
-      libraryDependencies ++= Dependencies.root
+      libraryDependencies ++= Dependencies.root,
+      parallelExecution in Test := false
     )
   )
 
@@ -24,7 +25,7 @@ object AkkaAmqpMailboxBuild extends Build {
 
   lazy val buildSettings = Seq(
     organization := "com.typesafe.akka",
-    version := "2.1.2",
+    version := "2.1.4",
     scalaVersion := "2.10.1"
   )
 
@@ -57,9 +58,9 @@ object Dependencies {
 object Dependency {
 
   object V {
-    val Akka         = "2.1.2"
-    val CommonsPool  = "1.5.6"
-    val Rabbit       = "3.0.4"
+    val Akka         = "2.1.4"
+    val CommonsPool  = "1.6"
+    val Rabbit       = "3.1.3"
     val Scalatest    = "1.9.1"
     val Slf4j        = "1.6.4"
   }
