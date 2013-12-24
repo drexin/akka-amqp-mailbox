@@ -6,7 +6,7 @@ object AMQPUriBasedMailboxSpec {
   val config = """
     AMQP-dispatcher {
       mailbox-type = de.r3tech.akka.actor.mailbox.AMQPBasedMailboxType
-      throughput = 1
+      throughput = 100
       uri = "amqp://127.0.0.1"
     }
     """

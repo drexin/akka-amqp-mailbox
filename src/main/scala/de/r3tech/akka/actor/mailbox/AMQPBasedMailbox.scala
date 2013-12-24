@@ -71,7 +71,8 @@ class AMQPBasedMailbox(owner: ActorRef, system: ExtendedActorSystem, val config:
   }
 
   def cleanUp(owner: ActorRef, deadLetters: MessageQueue) {
-    consumer.getChannel.close
+    consumer.getChannel.close()
+    pool.close()
   }
 
   def numberOfMessages: Int = withErrorHandling {

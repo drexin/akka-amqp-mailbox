@@ -10,6 +10,7 @@ import org.apache.commons.pool._
 import org.apache.commons.pool.impl._
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.Channel
+import java.io.IOException
 
 class AMQPConnectException(message: String) extends AkkaException(message)
 
@@ -21,9 +22,9 @@ private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingA
     try {
       createChannel
     } catch {
-      case e: java.io.IOException ⇒ {
+      case e: IOException ⇒ {
         log.error("Could not create a channel. Will retry after reconnecting to AMQP Server.", e)
-        connection.close
+        connection.close()
         connection = createConnection
         createChannel
       }
@@ -34,7 +35,7 @@ private[akka] class AMQPChannelFactory(factory: ConnectionFactory, log: LoggingA
     try {
       factory.newConnection
     } catch {
-      case e: java.net.ConnectException ⇒
+      case e: IOException ⇒
         throw new AMQPConnectException("Could not connect to AMQP broker: " + e.getMessage)
     }
   }
@@ -74,6 +75,6 @@ class AMQPChannelPool(factory: ConnectionFactory, log: LoggingAdapter) {
     }
   }
 
-  def close = pool.close
+  def close() = pool.close()
 }
 

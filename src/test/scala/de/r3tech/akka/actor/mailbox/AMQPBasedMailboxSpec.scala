@@ -6,7 +6,7 @@ object AMQPBasedMailboxSpec {
   val config = """
     AMQP-dispatcher {
       mailbox-type = de.r3tech.akka.actor.mailbox.AMQPBasedMailboxType
-      throughput = 1
+      throughput = 100
     }
     """
 }
